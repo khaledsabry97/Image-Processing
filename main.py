@@ -1,69 +1,111 @@
-from SubPackage import Input
-import numpy as np
 import cv2
+import numpy as np
 import math
 
-#LOADING HAND CASCADE
-hand_cascade = cv2.CascadeClassifier('Hand_haar_cascade.xml')
 
-# VIDEO CAPTURE
 cap = cv2.VideoCapture(0)
+while(cap.isOpened()):
+    # read image
+    ret, img = cap.read()
 
-while 1:
-	ret, img = cap.read()
-	blur = cv2.GaussianBlur(img,(5,5),0) # BLURRING IMAGE TO SMOOTHEN EDGES
-	gray = cv2.cvtColor(blur, cv2.COLOR_BGR2GRAY) # BGR -> GRAY CONVERSION
-	retval2,thresh1 = cv2.threshold(gray,70,255,cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU) # THRESHOLDING IMAGE
-	hand = hand_cascade.detectMultiScale(thresh1, 1.3, 5) # DETECTING HAND IN THE THRESHOLDE IMAGE
-	mask = np.zeros(thresh1.shape, dtype = "uint8") # CREATING MASK
-	for (x,y,w,h) in hand: # MARKING THE DETECTED ROI
-		cv2.rectangle(img,(x,y),(x+w,y+h), (122,122,0), 2) 
-		cv2.rectangle(mask, (x,y),(x+w,y+h),255,-1)
-	img2 = cv2.bitwise_and(thresh1, mask)
-	final = cv2.GaussianBlur(img2,(7,7),0)	
-	contours, hierarchy = cv2.findContours(final, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    # get hand data from the rectangle sub window on the screen
+    cv2.rectangle(img, (300,300), (100,100), (0,255,0),0)
+    crop_img = img[100:300, 100:300]
+  
+    # convert to grayscale
+    grey = cv2.cvtColor(crop_img, cv2.COLOR_BGR2GRAY)
 
-	cv2.drawContours(img, contours, 0, (255,255,0), 3)
-	cv2.drawContours(final, contours, 0, (255,255,0), 3)
+    # applying gaussian blur
+    value = (35, 35)
+    blurred = cv2.GaussianBlur(grey, value, 0)
 
-	if len(contours) > 0:
-		cnt=contours[0]
-		hull = cv2.convexHull(cnt, returnPoints=False)
-		# finding convexity defects
-		defects = cv2.convexityDefects(cnt, hull)
-		count_defects = 0
-		# applying Cosine Rule to find angle for all defects (between fingers)
-		# with angle > 90 degrees and ignore defect
-		if defects!= None:
-			for i in range(defects.shape[0]):
-				p,q,r,s = defects[i,0]
-				finger1 = tuple(cnt[p][0])
-				finger2 = tuple(cnt[q][0])
-				dip = tuple(cnt[r][0])
-				# find length of all sides of triangle
-				a = math.sqrt((finger2[0] - finger1[0])**2 + (finger2[1] - finger1[1])**2)
-				b = math.sqrt((dip[0] - finger1[0])**2 + (dip[1] - finger1[1])**2)
-				c = math.sqrt((finger2[0] - dip[0])**2 + (finger2[1] - dip[1])**2)
-				# apply cosine rule here
-				angle = math.acos((b**2 + c**2 - a**2)/(2*b*c)) * 57.29
-				# ignore angles > 90 and highlight rest with red dots
-				if angle <= 90:
-				    count_defects += 1
-		# define actions required
-		if count_defects == 1:
-			cv2.putText(img,"THIS IS 2", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
-		elif count_defects == 2:
-			cv2.putText(img, "THIS IS 3", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
-		elif count_defects == 3:
-			cv2.putText(img,"This is 4", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
-		elif count_defects == 4:
-			cv2.putText(img,"THIS IS 5", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
-	cv2.imshow('img',thresh1)
-	cv2.imshow('img1',img)
-	cv2.imshow('img2',img2)
+    # thresholdin: Otsu's Binarization method
+    _, thresh1 = cv2.threshold(blurred, 127, 255,
+                               cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
 
-	k = cv2.waitKey('q') & 0xff
-	if k == 'q':
-		break
-cap.release()
-cv2.destroyAllWindows()
+    # show thresholded image
+    cv2.imshow('Thresholded', thresh1)
+
+    # check OpenCV version to avoid unpacking error
+    (version, _, _) = cv2.__version__.split('.')
+
+    if version == '3':
+        image, contours, hierarchy = cv2.findContours(thresh1.copy(), \
+               cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+    elif version == '2':
+        contours, hierarchy = cv2.findContours(thresh1.copy(),cv2.RETR_TREE, \
+               cv2.CHAIN_APPROX_NONE)
+
+    # find contour with max area
+    cnt = max(contours, key = lambda x: cv2.contourArea(x))
+
+    # create bounding rectangle around the contour (can skip below two lines)
+    x, y, w, h = cv2.boundingRect(cnt)
+    cv2.rectangle(crop_img, (x, y), (x+w, y+h), (0, 0, 255), 0)
+
+    # finding convex hull
+    hull = cv2.convexHull(cnt)
+
+    # drawing contours
+    drawing = np.zeros(crop_img.shape,np.uint8)
+    cv2.drawContours(drawing, [cnt], 0, (0, 255, 0), 0)
+    cv2.drawContours(drawing, [hull], 0,(0, 0, 255), 0)
+
+    # finding convex hull
+    hull = cv2.convexHull(cnt, returnPoints=False)
+
+    # finding convexity defects
+    defects = cv2.convexityDefects(cnt, hull)
+    count_defects = 0
+    cv2.drawContours(thresh1, contours, -1, (0, 255, 0), 3)
+
+    # applying Cosine Rule to find angle for all defects (between fingers)
+    # with angle > 90 degrees and ignore defects
+    for i in range(defects.shape[0]):
+        s,e,f,d = defects[i,0]
+
+        start = tuple(cnt[s][0])
+        end = tuple(cnt[e][0])
+        far = tuple(cnt[f][0])
+
+        # find length of all sides of triangle
+        a = math.sqrt((end[0] - start[0])**2 + (end[1] - start[1])**2)
+        b = math.sqrt((far[0] - start[0])**2 + (far[1] - start[1])**2)
+        c = math.sqrt((end[0] - far[0])**2 + (end[1] - far[1])**2)
+
+        # apply cosine rule here
+        angle = math.acos((b**2 + c**2 - a**2)/(2*b*c)) * 57
+
+        # ignore angles > 90 and highlight rest with red dots
+        if angle <= 90:
+            count_defects += 1
+            cv2.circle(crop_img, far, 1, [0,0,255], -1)
+        #dist = cv2.pointPolygonTest(cnt,far,True)
+
+        # draw a line from start to end i.e. the convex points (finger tips)
+        # (can skip this part)
+        cv2.line(crop_img,start, end, [0,255,0], 2)
+        #cv2.circle(crop_img,far,5,[0,0,255],-1)
+
+    # define actions required
+    if count_defects == 1:
+        cv2.putText(img,"I am Vipul", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
+    elif count_defects == 2:
+        str = "This is a basic hand gesture recognizer"
+        cv2.putText(img, str, (5, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, 2)
+    elif count_defects == 3:
+        cv2.putText(img,"This is 4 :P", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
+    elif count_defects == 4:
+        cv2.putText(img,"Hi!!!", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
+    else:
+        cv2.putText(img,"Hello World!!!", (50, 50),\
+                    cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
+
+    # show appropriate images in windows
+    cv2.imshow('Gesture', img)
+    all_img = np.hstack((drawing, crop_img))
+    cv2.imshow('Contours', all_img)
+
+    k = cv2.waitKey(10)
+    if k == 27:
+        break
