@@ -1,0 +1,18 @@
+these references is for how to use opencv function and implementations :-
+opencv library implementations :  https://goo.gl/TMdXia
+to view function in opencv library : https://goo.gl/WVDq6S
+how to use opencv functions (youtube playlist) : https://goo.gl/YLxtTB
+
+these references is for how to detect face and remove it from the image :-
+Haar Cascades algorithm (original paper) : https://goo.gl/1v4SDz
+Haar Cascades algorithm( face detection ) opencv documentation : https://goo.gl/rJnc9b
+video and project that detect convex of hand and remove the face : https://goo.gl/TGa2Fj
+training haar cascade for any item by dataset 1(youtube video) : https://goo.gl/HeTzov
+training haar cascade object detection by dataset 2(youtube video) : https://goo.gl/ANK8C4
+
+these references is for how to detect convex :-
+gift wrapping algorithm (wikipedia) : https://goo.gl/RCFZKE
+gift wrapping algorithm explination (youtube video) : https://goo.gl/tLY3qJ
+this video is using three algorithms instead of one (youtube video) : https://goo.gl/UdTjVe
+gift wrapping algorithm known as jarvis explaination and implementation (geeksforgeeks) : https://goo.gl/cHjhsA
+graham scan explaination and impelementation(geeksforgeeks) : https://goo.gl/JgXtcC
