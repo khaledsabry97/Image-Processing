@@ -1,0 +1,9 @@
+Khaled Algorithm To detect hand 
+1) open video and take an image
+2) make edge detection
+3) take another image ( you may need to sleep 10ms)
+4) make edge detection
+5) subtract the two edge images ( you may need to subtract 8- nighbouring )
+6) you will now have an edge image that has lines before movement and lines after movement
+7) you will now start from image start and run to the end ( all the width) if you cross two lines then you are in the region of hand or the shirt or the face so you will take a sample 
+and compare it to the total average value and choose the values that are close to this value then you take the pixel color and make and add to average color
