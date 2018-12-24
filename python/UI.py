@@ -68,10 +68,12 @@ class UI:
      #check if the points are valid
     def checkPoints(self,red,blue,yellow):
         if red > 0:
-            if blue > 0 or yellow > 0 or red > 2: 
+            #if blue > 0 or yellow > 0 or red > 2: 
+            if blue > 0 or red > 2:
                 return False
         if blue > 0:
-            if red > 0 or yellow > 0 or blue > 2:
+            #if red > 0 or yellow > 0 or blue > 2:
+            if red > 0 or blue > 2:
                 return False
         if yellow > 0:
             if red > 0 or blue > 0 or yellow >1:

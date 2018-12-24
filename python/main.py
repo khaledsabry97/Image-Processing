@@ -20,8 +20,8 @@ if  __name__ == "__main__":
     #fourcc = cv2.VideoWriter_fourcc(*'XVID')
     #out = cv2.VideoWriter('try14.avi',fourcc, 20.0, (640,480))
 
-    #camera =cv2.VideoCapture("try14.avi")  # this for mobil connection cam
-    camera =cv2.VideoCapture(0) 
+    camera =cv2.VideoCapture("try10.avi")  # this for mobil connection cam
+    #camera =cv2.VideoCapture(0) 
     #camera =cv2.VideoCapture("http://192.168.0.101:4747/video")
     time.sleep(0.25)
     while camera.isOpened():  

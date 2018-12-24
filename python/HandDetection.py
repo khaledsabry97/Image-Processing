@@ -59,7 +59,7 @@ class HandDetection:
             cv2.rectangle(frame,(x,y),(x+w+10,y+h+10),(0,255,0),2)     
             
             rectanglemask = np.zeros((frame.shape[0],frame.shape[1]),dtype=np.uint8)        
-            cv2.rectangle(rectanglemask,(x,y),(x+w+10,y+h+10),(255,255,255),-1)
+            cv2.rectangle(rectanglemask,(x,y),(x+w+20,y+h+10),(255,255,255),-1)
 
             framehsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
             # get hue , saturation and value ranges for hand
@@ -172,7 +172,7 @@ class HandDetection:
             mask1 = cv2.dilate(mask1,kernelDilation,iterations = 2)
             
             lower_blue = np.array([lowHue - 255  ,lowSat, lowVal -255])
-            upper_blue = np.array([highHue + 255 ,highSat +255,highVal + 255 ])      
+            upper_blue = np.array([highHue + 255 ,highSat ,highVal + 255 ])      
             mask2 = cv2.inRange(frame, lower_blue, upper_blue)
             
             lower_blue = np.array([lowHue - 255  ,lowSat -255  ,lowVal - 25 ])
