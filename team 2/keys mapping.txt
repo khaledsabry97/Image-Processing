@@ -1,0 +1,7 @@
+* To open/close windows press following keys:
+	f => Frame window
+	m => Mask window
+	t => Threshold window
+	h => Hue window
+	s => Saturation window
+	v => Value window
