@@ -25,11 +25,10 @@ V, W”
 
 <img width="250" height="200" src="https://github.com/khaledsabry97/Sign-Recognition/blob/master/Attempts/Photos/A2.jpg"> <img width="250" height="200" src="https://github.com/khaledsabry97/Sign-Recognition/blob/master/Attempts/Photos/L2.jpg"> <img width="250" height="200" src="https://github.com/khaledsabry97/Sign-Recognition/blob/master/Attempts/Photos/M2.jpg"> <img width="250" height="200" src="https://github.com/khaledsabry97/Sign-Recognition/blob/master/Attempts/Photos/V2.jpg"> <img width="250" height="200" src="https://github.com/khaledsabry97/Sign-Recognition/blob/master/Attempts/Photos/W2.jpg"> 
 
-## Attempts which guided us to solution
-we categorized our problem to recognize the hand into two
-categories:
-### mask the hand out of background.
-### detect the characters from hand.
+## Main Pipeline
+we categorized our problem to recognize the hand into two categories:
+1. mask the hand out of background.
+2. detect the characters from hand.
 
 ## Performance
 All code for all tries were very fast and we didn’t face any problem with performance.
